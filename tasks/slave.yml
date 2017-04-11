@@ -1,0 +1,35 @@
+- name: Stop PostgreSQL
+  service:
+    name: postgresql-9.4
+    state: stopped
+
+- name: Clear out data directory
+  shell: rm -rf /var/lib/pgsql/9.4/data/*
+
+- name: Create base backup
+  command: pg_basebackup -X stream -D /var/lib/pgsql/9.4/data -h {{ hostvars[groups.database[0]].ansible_default_ipv4.address }} -U replicator
+  become: yes
+  become_user: postgres
+
+- name: Create recovery.conf
+  template:
+    src: recovery.conf.j2
+    dest: /var/lib/pgsql/9.4/data/recovery.conf
+    owner: postgres
+    group: postgres
+    mode: 0644
+
+- name: Ensable hot standby
+  lineinfile:
+    state: present
+    backup: yes
+    dest: /var/lib/pgsql/9.4/data/postgresql.conf
+    regexp: '^#?hot_standby = \w+(\s+#.*)'
+    line: 'hot_standby = yes\1'
+    backrefs: yes
+
+- name: Start and enable PostgreSQL
+  service:
+    name: postgresql-9.4
+    state: started
+    enabled: yes

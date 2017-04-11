@@ -1,0 +1,3 @@
+standby_mode=on
+trigger_file='/tmp/promotedb'
+primary_conninfo='host={{ groups.database[0] }} port={{ pg_port }} user={{ postgresrep_user }} application_name={{ postgresrep_application_name }}'

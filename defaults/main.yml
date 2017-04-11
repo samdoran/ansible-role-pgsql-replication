@@ -1,0 +1,30 @@
+pg_port: 5432
+
+postgresrep_role: skip
+postgresrep_user: replicator
+#postgresrep_password: '' # Store this in an Ansible vault
+postgresrep_wal_level: hot_standby
+postgresrep_max_wal_senders: 2
+postgresrep_wal_keep_segments: 100
+postgresrep_synchronous_commit: local
+postgresrep_application_name: awx
+
+postgresrep_postgres_conf_lines:
+  - regexp: '#?wal_level = \w+(\s+#.*)'
+    line: 'wal_level = {{ postgresrep_wal_level }}\1'
+
+  - regexp: '#?max_wal_senders = \d+(\s+#.*)'
+    line: 'max_wal_senders = {{ postgresrep_max_wal_senders }}\1'
+
+  - regexp: '#?wal_keep_segments = .*(\s+#.*)'
+    line: 'wal_keep_segments = {{ postgresrep_wal_keep_segments }}\1'
+
+  - regexp: '#?synchronous_standby_names = .*'
+    line: "synchronous_standby_names = '{{ postgresrep_application_name }}'"
+
+  - regexp: '#?synchronous_commit = \w+(\s+#.*)'
+    line: 'synchronous_commit = {{ postgresrep_synchronous_commit }}\1'
+
+postgresrep_pg_hba_conf_lines:
+  - regexp: 'host.*replication.*/32.*trust'
+    line: 'host    replication    replicator  {{ hostvars[groups.dbslave[0]].ansible_default_ipv4.address }}/32 trust'

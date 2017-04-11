@@ -1,0 +1,2 @@
+- include: "{{ postgresrep_role }}.yml"
+  when: postgresrep_role != 'skip'
