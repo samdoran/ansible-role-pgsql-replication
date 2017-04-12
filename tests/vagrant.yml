@@ -1,6 +1,12 @@
-- hosts: all
-  remote_user: vagrant
+- name: Gather facts
+  hosts: all
+  gather_facts: yes
+
+- name: Install Ansible Tower
+  hosts: tower[0]
+  gather_facts: yes
   become: yes
 
   roles:
-    - ROLENAME
+    - '{{ playbook_dir }}/ansible-tower'
+

@@ -1,64 +1,43 @@
 Vagrant.configure(2) do |config|
 
-  # config.dns.tld = "vagrant.dev"
+  config.ssh.insert_key = false
 
-  # CentOS 6
-  config.vm.define "ROLENAME-el6" do |centos6|
-    centos6.vm.box = "geerlingguy/centos6"
-    centos6.vm.hostname = "ROLENAME-centos6"
+  config.vm.define "tower1" do |centos7|
+    centos7.vm.box = "samdoran/centos7"
+    centos7.vm.hostname = "tower1"
+    centos7.vm.network "private_network", ip: "10.77.1.11"
+    config.vm.synced_folder '../../postgresql-replication', '/etc/ansible/roles/postgres-replication'
     config.vm.provider "virtualbox" do |vbox|
-      vbox.name = "ROLENAME-el6"
-      vbox.cpus = 1
-      vbox.memory = 128
+      vbox.name = "tower1"
+      vbox.cpus = 4
+      vbox.memory = 2048
+    end
+    config.vm.provision "ansible" do |ansible|
+      ansible.playbook = 'vagrant.yml'
+      ansible.inventory_path = 'hosts'
     end
   end
 
-  # CentOS 7
-  config.vm.define "ROLENAME-el7" do |centos7|
-    centos7.vm.box = "geerlingguy/centos7"
-    centos7.vm.hostname = "ROLENAME-centos7"
+  config.vm.define "psql-master-centos7" do |centos7|
+    centos7.vm.box = "samdoran/centos7"
+    centos7.vm.hostname = "psql-master-centos7"
+    centos7.vm.network "private_network", ip: "10.78.1.17"
     config.vm.provider "virtualbox" do |vbox|
-      vbox.name = "ROLENAME-el7"
-      vbox.cpus = 1
-      vbox.memory = 128
+      vbox.name = "psql-master-centos7"
+      vbox.cpus = 2
+      vbox.memory = 1024
     end
   end
 
-  # Ubuntu 12.04
-  config.vm.define "ROLENAME-ub12" do |node|
-    node.vm.box = "geerlingguy/ubuntu1204"
-    node.vm.hostname = "ROLENAME-ub12"
+  config.vm.define "psql-slave-centos7" do |centos7|
+    centos7.vm.box = "samdoran/centos7"
+    centos7.vm.hostname = "psql-slave-centos7"
+    centos7.vm.network "private_network", ip: "10.78.1.18"
     config.vm.provider "virtualbox" do |vbox|
-      vbox.name = "ROLENAME-ub12"
-      vbox.cpus = 1
-      vbox.memory = 128
+      vbox.name = "psql-slave-centos7"
+      vbox.cpus = 2
+      vbox.memory = 1024
     end
-  end
-
-  # Ubuntu 14.04
-  config.vm.define "ROLENAME-ub14" do |ub14|
-    ub14.vm.box = "geerlingguy/ubuntu1404"
-    ub14.vm.hostname = "ROLENAME-ub14"
-    config.vm.provider "virtualbox" do |vbox|
-      vbox.name = "ROLENAME-ub14"
-      vbox.cpus = 1
-      vbox.memory = 256
-    end
-  end
-
-  # Ubuntu 16.04
-  config.vm.define "ROLENAME-ub16" do |ub16|
-    ub16.vm.box = "geerlingguy/ubuntu1604"
-    ub16.vm.hostname = "ROLENAME-ub16"
-    config.vm.provider "virtualbox" do |vbox|
-      vbox.name = "ROLENAME-ub16"
-      vbox.cpus = 1
-      vbox.memory = 128
-    end
-  end
-
-  config.vm.provision "ansible" do |ansible|
-    ansible.playbook = "vagrant.yml"
   end
 
 end
