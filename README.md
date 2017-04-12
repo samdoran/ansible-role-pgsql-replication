@@ -1,7 +1,7 @@
 
 PostgreSQL Streaming Replication
 =========
-[![Galaxy](https://img.shields.io/badge/galaxy-samdoran.postgresql--replication-blue.svg?style=flat)](https://galaxy.ansible.com/samdoran/postgresql--replication)
+[![Galaxy](https://img.shields.io/badge/galaxy-samdoran.postgresql--replication-blue.svg?style=flat)](https://galaxy.ansible.com/samdoran/postgresql-replication)
 
 Configure PostgreSQL streaming replication between two nodes. This role was developed and tested for use on PostgreSQL 9.4 for setting up a redundant database backend for [Ansible Tower](https://www.ansible.com/tower). This will not configure advanced clustering but will configure two PostgreSQL nodes in a master/slave configuration.
 
