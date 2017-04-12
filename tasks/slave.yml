@@ -7,7 +7,7 @@
   shell: rm -rf /var/lib/pgsql/9.4/data/*
 
 - name: Create base backup
-  command: pg_basebackup -X stream -D /var/lib/pgsql/9.4/data -h {{ hostvars[groups.database[0]].ansible_default_ipv4.address }} -U replicator
+  command: pg_basebackup -X stream -D /var/lib/pgsql/9.4/data -h {{ postgresrep_master_address }} -U replicator
   become: yes
   become_user: postgres
 
