@@ -15,7 +15,6 @@ postgresrep_group_name_master: database
 postgresrep_master_address: "{{ hostvars[groups[postgresrep_group_name_master][0]].ansible_default_ipv4.address }}"
 postgresrep_slave_address: "{{ hostvars[groups[postgresrep_group_name][0]].ansible_default_ipv4.address }}"
 
-
 postgresrep_postgres_conf_lines:
   - regexp: '#?wal_level = \w+(\s+#.*)'
     line: 'wal_level = {{ postgresrep_wal_level }}\1'
