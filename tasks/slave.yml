@@ -19,7 +19,7 @@
     group: postgres
     mode: 0644
 
-- name: Ensable hot standby
+- name: Enable hot standby
   lineinfile:
     state: present
     backup: yes
@@ -27,6 +27,8 @@
     regexp: '^#?hot_standby = \w+(\s+#.*)'
     line: 'hot_standby = yes\1'
     backrefs: yes
+  become: yes
+  become_user: postgres
 
 - name: Start and enable PostgreSQL
   service:
