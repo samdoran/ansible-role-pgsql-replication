@@ -66,7 +66,7 @@ Example Playbook
 Install this role alongside the roles used by the Anisble Tower installer (bundled or standalone). Then run the example playbook.
 
 ```
-ansible-galaxy install samdoran.samdoran.postgresql-replication -p roles
+ansible-galaxy install samdoran.postgresql-replication -p roles
 ansible-playbook -b -i inventory psql-replication.yml
 ```
 
