@@ -38,6 +38,7 @@ Role Variables
 | Name              | Default Value       | Description          |
 |-------------------|---------------------|----------------------|
 | `pg_port` | `5432` | PostgreSQL port |
+| `bundle_install` | `False` | Set to `True` if using the Bundle Installer |
 | `postgresrep_role` | `skip` | `master` or `slave`, which determinse which tasks run on the host |
 | `postgresrep_user` | `replicator` | User account that will be created and used for replication. |
 | `postgresrep_password` | `[undefined]` | Password for replication account |
