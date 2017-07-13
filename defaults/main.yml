@@ -1,5 +1,7 @@
 pg_port: 5432
 
+bundle_install: False
+
 postgresrep_role: skip
 postgresrep_user: replicator
 #postgresrep_password: '' # Store this in an Ansible vault
