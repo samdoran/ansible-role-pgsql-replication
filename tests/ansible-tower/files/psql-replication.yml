@@ -4,7 +4,7 @@
   pre_tasks:
     - name: Remove recovery.conf
       file:
-        path: /var/lib/pgsql/9.4/data/recovery.conf
+        path: /var/lib/pgsql/9.6/data/recovery.conf
         state: absent
 
     - name: Add slave to database group

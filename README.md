@@ -3,9 +3,9 @@ PostgreSQL Streaming Replication
 =========
 [![Galaxy](https://img.shields.io/badge/galaxy-samdoran.postgresql--replication-blue.svg?style=flat)](https://galaxy.ansible.com/samdoran/postgresql-replication)
 
-Configure PostgreSQL streaming replication between two nodes. This role was developed and tested for use on PostgreSQL 9.4 for setting up a redundant database backend for [Ansible Tower](https://www.ansible.com/tower). This will not configure advanced clustering but will configure two PostgreSQL nodes in a master/slave configuration.
+Configure PostgreSQL streaming replication between two nodes. This role was developed and tested for use on PostgreSQL 9.6 for setting up a redundant database backend for [Ansible Tower](https://www.ansible.com/tower). This will not configure advanced clustering but will configure two PostgreSQL nodes in a master/slave configuration.
 
-Thes role depends on the roles included with the Ansible Tower installer.
+The role depends on the roles included with the Ansible Tower installer.
 
 Requirements
 ------------
@@ -38,33 +38,34 @@ Role Variables
 | Name              | Default Value       | Description          |
 |-------------------|---------------------|----------------------|
 | `pg_port` | `5432` | PostgreSQL port |
-| `bundle_install` | `False` | Set to `True` if using the Bundle Installer |
-| `postgresrep_role` | `skip` | `master` or `slave`, which determinse which tasks run on the host |
+| `bundle_install` | `False` | Set to `True` if using the Bundle Installer. |
+| `postgresrep_role` | `skip` | `master` or `slave`, which determines which tasks run on the host. |
 | `postgresrep_user` | `replicator` | User account that will be created and used for replication. |
 | `postgresrep_password` | `[undefined]` | Password for replication account |
 | `postgresrep_wal_level` | `hot_standby` | WAL level |
 | `postgresrep_max_wal_senders` | `2` | Max number of WAL senders. Don't set this less than two otherwise the initial sync will fail. |
-| `postgresrep_wal_keep_segments` | `100` | Max number of WAL segments |
+| `postgresrep_wal_keep_segments` | `100` | Max number of WAL segments. |
 | `postgresrep_synchronous_commit` | `local` | Set to `on`, `local`, or `off`. Setting to `on` will cause the master to stop accepting writes in the slave goes down. See [documentation](https://www.postgresql.org/docs/9.1/static/runtime-config-wal.html#GUC-SYNCHRONOUS-COMMIT) |
 | `postgresrep_application_name` | `awx` | Application name used for synchronization. |
 | `postgresrep_group_name` | `database_slave` | Name of the group that contains the slave database. |
 | `postgresrep_group_name_master` | `database` | Name of the gorup that contains the master database. |
-| `postgresrep_master_address` | `[default IPv4 of the master]` | If you need something other than the default IPv4 address, for expample, FQDN, define it here. |
-| `postgresrep_slave_address` | `[default IPv4 of the slave` | If you need something other than the default IPv4 address, for expample, FQDN, define it here. |
+| `postgresrep_master_address` | `[default IPv4 of the master]` | If you need something other than the default IPv4 address, for example, FQDN, define it here. |
+| `postgresrep_slave_address` | `[default IPv4 of the slave` | If you need something other than the default IPv4 address, for example, FQDN, define it here. |
 | `postgresrep_postgres_conf_lines` | `[see defaults/main.yml]` | Lines in `postgres.conf` that are set in order to enable streaming replication. |
 | `postgresrep_pg_hba_conf_lines` | `[see defaults/main.yml]` | Lines to add to `pg_hba.conf` that allow slave to connect to master. |
 
 
 Dependencies
 ------------
-
+- nginx
+- repos_el
 - postgresql
 - firewall
 
 Example Playbook
 ----------------
 
-Install this role alongside the roles used by the Anisble Tower installer (bundled or standalone). Then run the example playbook.
+Install this role alongside the roles used by the Ansible Tower installer (bundled or standalone). Then run the example playbook.
 
 ```
 ansible-galaxy install samdoran.postgresql-replication -p roles
@@ -72,13 +73,28 @@ ansible-playbook -b -i inventory psql-replication.yml
 ```
 
 ```yaml
+
+- name: "Define role discovered variables, usable throughout the playbook"
+  hosts: database_slave
+  gather_facts: false
+  roles:
+    - role: nginx
+      nginx_exec_vars_only: true
+
+- name: "Prep installation repos"
+  hosts: database_slave
+  gather_facts: false
+  roles:
+    - role: repos_el
+      when: ansible_os_family == "RedHat"
+
 - name: Configure PostgreSQL streaming replication
   hosts: database_slave
 
   pre_tasks:
     - name: Remove recovery.conf
       file:
-        path: /var/lib/pgsql/9.4/data/recovery.conf
+        path: /var/lib/pgsql/9.6/data/recovery.conf
         state: absent
 
     - name: Add slave to database group
@@ -127,7 +143,7 @@ ansible-playbook -b -i inventory psql-replication.yml
 
 This playbook can be run multiple times. Each time, it erases all the data on the slave node and creates a fresh copy of the database from the master.
 
-If the primary database node goes now, here is a playbook that can be used to fail over to the secondary node.
+If the primary database node goes down, here is a playbook that can be used to fail over to the secondary node.
 
 ```yaml
 - name: Gather facts
@@ -140,10 +156,10 @@ If the primary database node goes now, here is a playbook that can be used to fa
 
   tasks:
     - name: Promote secondary PostgreSQL server to primary
-      command: /usr/pgsql-9.4/bin/pg_ctl promote
+      command: /usr/pgsql-9.6/bin/pg_ctl promote
       become_user: postgres
       environment:
-        PGDATA: /var/lib/pgsql/9.4/data
+        PGDATA: /var/lib/pgsql/9.6/data
       ignore_errors: yes
 
 - name: Update Ansible Tower database configuration
