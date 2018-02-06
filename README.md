@@ -148,7 +148,7 @@ If the primary database node goes now, here is a playbook that can be used to fa
 
   tasks:
     - name: Promote secondary PostgreSQL server to primary
-      command: /usr/pgsql-{{ pg _version }}/bin/pg_ctl promote
+      command: /usr/pgsql-{{ pg_version }}/bin/pg_ctl promote
       become_user: postgres
       environment:
         PGDATA: /var/lib/pgsql/{{ pg_version }}/data
