@@ -1,11 +1,3 @@
-# 1/17/2017 Allen Eastwood
-#
-# updating to provide support for postgres 9.6 (Tower 3.2+)
-# Added a default pg_version
-# Updated tasks to use pg_version as a variable
-# Tested on Tower 3.2, after a 3.2.1 upgrade
-# Have not tested failover yet!
-#
 PostgreSQL Streaming Replication
 =========
 [![Galaxy](https://img.shields.io/badge/galaxy-samdoran.postgresql--replication-blue.svg?style=flat)](https://galaxy.ansible.com/samdoran/postgresql-replication)
