@@ -8,7 +8,7 @@ postgresrep_role: skip
 postgresrep_user: replicator
 #postgresrep_password: '' # Store this in an Ansible vault
 postgresrep_wal_level: hot_standby
-postgresrep_max_wal_senders: 3
+postgresrep_max_wal_senders: 2
 postgresrep_wal_keep_segments: 100
 postgresrep_synchronous_commit: local
 postgresrep_application_name: awx
