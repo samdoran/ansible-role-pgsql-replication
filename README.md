@@ -68,7 +68,7 @@ Install this role alongside the roles used by the Anisble Tower installer (bundl
 
 ```
 ansible-galaxy install samdoran.postgresql-replication -p roles
-ansible-playbook -b -i inventory psql-replication.yml
+ansible-playbook -b -i inventory psql-replication.yml -e 'pg_version=9.6'
 ```
 
 ```yaml
@@ -89,6 +89,9 @@ ansible-playbook -b -i inventory psql-replication.yml
         - always
 
   roles:
+    - role: repos_el
+      when: bundle_install
+
     - role: packages_el
       packages_el_install_tower: false
       packages_el_install_postgres: true
