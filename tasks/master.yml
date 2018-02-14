@@ -2,7 +2,7 @@
   lineinfile:
     state: present
     backrefs: yes
-    dest: /var/lib/pgsql/9.4/data/postgresql.conf
+    dest: /var/lib/pgsql/{{ pg_version }}/data/postgresql.conf
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
   with_items: "{{ postgresrep_postgres_conf_lines }}"
@@ -19,8 +19,11 @@
 - name: Add trust in pg_hba.conf
   lineinfile:
     state: present
-    dest: /var/lib/pgsql/9.4/data/pg_hba.conf
+    dest: /var/lib/pgsql/{{ pg_version }}/data/pg_hba.conf
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
   with_items: "{{ postgresrep_pg_hba_conf_lines }}"
   notify: restart postgresql
+
+- name: force all notified handlers to run at this point, not waiting for normal sync points
+  meta: flush_handlers

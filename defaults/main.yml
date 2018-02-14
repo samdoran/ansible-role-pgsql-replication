@@ -1,5 +1,7 @@
 pg_port: 5432
 
+pg_version: 9.6
+
 bundle_install: False
 
 postgresrep_role: skip

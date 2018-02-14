@@ -1,0 +1,32 @@
+- name: Gather facts
+  hosts: all
+  become: yes
+
+- name: Failover PostgreSQL
+  hosts: database_slave
+  become: yes
+
+  tasks:
+    - name: Promote secondary PostgreSQL server to primary
+      command: /usr/pgsql-{{ pg_version }}/bin/pg_ctl promote
+      become_user: postgres
+      environment:
+        PGDATA: /var/lib/pgsql/{{ pg_version }}/data
+      ignore_errors: yes
+
+- name: Update Ansible Tower database configuration
+  hosts: tower
+  become: yes
+
+  tasks:
+    - name: Update Tower postgres.py
+      lineinfile:
+        dest: /etc/tower/conf.d/postgres.py
+        regexp: "^(.*'HOST':)"
+        line: "\\1 '{{ hostvars[groups['database_slave'][0]].ansible_default_ipv4.address }}',"
+        backrefs: yes
+      notify: restart tower
+
+  handlers:
+    - name: restart tower
+      command: ansible-tower-service restart

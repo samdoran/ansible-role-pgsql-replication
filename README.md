@@ -1,4 +1,3 @@
-
 PostgreSQL Streaming Replication
 =========
 [![Galaxy](https://img.shields.io/badge/galaxy-samdoran.postgresql--replication-blue.svg?style=flat)](https://galaxy.ansible.com/samdoran/postgresql-replication)
@@ -38,6 +37,7 @@ Role Variables
 | Name              | Default Value       | Description          |
 |-------------------|---------------------|----------------------|
 | `pg_port` | `5432` | PostgreSQL port |
+| `pg_version` | `9.6` | PostgreSQL version |
 | `bundle_install` | `False` | Set to `True` if using the Bundle Installer |
 | `postgresrep_role` | `skip` | `master` or `slave`, which determinse which tasks run on the host |
 | `postgresrep_user` | `replicator` | User account that will be created and used for replication. |
@@ -68,7 +68,7 @@ Install this role alongside the roles used by the Anisble Tower installer (bundl
 
 ```
 ansible-galaxy install samdoran.postgresql-replication -p roles
-ansible-playbook -b -i inventory psql-replication.yml
+ansible-playbook -b -i inventory psql-replication.yml -e 'pg_version=9.6'
 ```
 
 ```yaml
@@ -78,7 +78,7 @@ ansible-playbook -b -i inventory psql-replication.yml
   pre_tasks:
     - name: Remove recovery.conf
       file:
-        path: /var/lib/pgsql/9.4/data/recovery.conf
+        path: /var/lib/pgsql/{{ pg_version }}/data/recovery.conf
         state: absent
 
     - name: Add slave to database group
@@ -89,6 +89,9 @@ ansible-playbook -b -i inventory psql-replication.yml
         - always
 
   roles:
+    - role: repos_el
+      when: bundle_install
+
     - role: packages_el
       packages_el_install_tower: false
       packages_el_install_postgres: true
@@ -140,10 +143,10 @@ If the primary database node goes now, here is a playbook that can be used to fa
 
   tasks:
     - name: Promote secondary PostgreSQL server to primary
-      command: /usr/pgsql-9.4/bin/pg_ctl promote
+      command: /usr/pgsql-{{ pg_version }}/bin/pg_ctl promote
       become_user: postgres
       environment:
-        PGDATA: /var/lib/pgsql/9.4/data
+        PGDATA: /var/lib/pgsql/{{ pg_version }}/data
       ignore_errors: yes
 
 - name: Update Ansible Tower database configuration
