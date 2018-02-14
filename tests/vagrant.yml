@@ -7,6 +7,7 @@
   gather_facts: yes
   become: yes
 
-  roles:
-    - '{{ playbook_dir }}/ansible-tower'
+  tasks:
+    - import_role:
+        name: "{{ playbook_dir }}/ansible-tower"
 

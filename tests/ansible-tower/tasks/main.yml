@@ -50,18 +50,19 @@
   command: ./setup.sh -e disable_https=yes
   args:
     chdir: "{{ installer_path.files[0].path }}"
+    creates: /etc/tower/SECRET_KEY
   tags:
     - tower
     - tower-install
 
 - name: Copy PostgreSQL replication playbook
   copy:
-    src: psql-replication.yml
+    src: pgsql-replication.yml
     dest: "{{ installer_path.files[0].path }}"
   tags:
     - tower
 
-- name: Configure PostgreSQL replication
-  command: ansible-playbook -b -i inventory psql-replication.yml
-  args:
-    chdir: "{{ installer_path.files[0].path }}"
+# - name: Configure PostgreSQL replication
+#   command: ansible-playbook -b -i inventory pgsql-replication.yml
+#   args:
+#     chdir: "{{ installer_path.files[0].path }}"

@@ -1,0 +1,80 @@
+- name: Configure PostgreSQL streaming replication
+  hosts: database_replica
+
+  tasks:
+    - name: Find recovery.conf
+      find:
+        paths: /var/lib/pgsql
+        recurse: yes
+        patterns: recovery.conf
+      register: recovery_conf_path
+
+    - name: Remove recovery.conf
+      file:
+        path: "{{ item.path }}"
+        state: absent
+      with_items: "{{ recovery_conf_path.files }}"
+
+    - name: Add replica to database group
+      add_host:
+        name: "{{ inventory_hostname }}"
+        groups: database
+      tags:
+        - always
+
+    - import_role:
+        name: repos_el
+      when: ansible_os_family == "RedHat"
+
+    - import_role:
+        name: packages_el
+      vars:
+        packages_el_install_tower: false
+        packages_el_install_postgres: true
+      when: ansible_os_family == "RedHat"
+
+    - import_role:
+        name: postgres
+      vars:
+        postgres_allowed_ipv4: "0.0.0.0/0"
+        postgres_allowed_ipv6: "::/0"
+        postgres_username: "{{ pg_username }}"
+        postgres_password: "{{ pg_password }}"
+        postgres_database: "{{ pg_database }}"
+        max_postgres_connections: 1024
+        postgres_shared_memory_size: "{{ (ansible_memtotal_mb*0.3)|int }}"
+        postgres_work_mem: "{{ (ansible_memtotal_mb*0.03)|int }}"
+        postgres_maintenance_work_mem: "{{ (ansible_memtotal_mb*0.04)|int }}"
+      tags:
+        - postgresql_database
+
+    - import_role:
+        name: firewall
+      vars:
+        firewalld_http_port: "{{ nginx_http_port }}"
+        firewalld_https_port: "{{ nginx_https_port }}"
+      tags:
+        - firewall
+      when: ansible_os_family == 'RedHat'
+
+- name: Configure PSQL master server
+  hosts: database[0]
+
+  vars:
+    pgsqlrep_master_address: "{{ hostvars[groups[pgsqlrep_group_name_master][0]].ansible_all_ipv4_addresses[-1] }}"
+    pgsqlrep_replica_address: "{{ hostvars[groups[pgsqlrep_group_name][0]].ansible_all_ipv4_addresses[-1] }}"
+
+  tasks:
+    - import_role:
+        name: pgsql-replication
+
+- name: Configure PSQL replica
+  hosts: database_replica
+
+  vars:
+    pgsqlrep_master_address: "{{ hostvars[groups[pgsqlrep_group_name_master][0]].ansible_all_ipv4_addresses[-1] }}"
+    pgsqlrep_replica_address: "{{ hostvars[groups[pgsqlrep_group_name][0]].ansible_all_ipv4_addresses[-1] }}"
+
+  tasks:
+    - import_role:
+        name: pgsql-replication

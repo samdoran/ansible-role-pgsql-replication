@@ -2,16 +2,16 @@
   lineinfile:
     state: present
     backrefs: yes
-    dest: /var/lib/pgsql/9.4/data/postgresql.conf
+    dest: "{{ pgsqlrep_data_path }}/postgresql.conf"
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
-  with_items: "{{ postgresrep_postgres_conf_lines }}"
+  with_items: "{{ pgsqlrep_postgres_conf_lines }}"
   notify: restart postgresql
 
 - name: Create replication user account
   postgresql_user:
-    name: "{{ postgresrep_user }}"
-    password: "{{ postgresrep_password }}"
+    name: "{{ pgsqlrep_user }}"
+    password: "{{ pgsqlrep_password }}"
     role_attr_flags: replication
   become: True
   become_user: postgres
@@ -19,8 +19,8 @@
 - name: Add trust in pg_hba.conf
   lineinfile:
     state: present
-    dest: /var/lib/pgsql/9.4/data/pg_hba.conf
+    dest: "{{ pgsqlrep_data_path }}/pg_hba.conf"
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
-  with_items: "{{ postgresrep_pg_hba_conf_lines }}"
+  with_items: "{{ pgsqlrep_pg_hba_conf_lines }}"
   notify: restart postgresql

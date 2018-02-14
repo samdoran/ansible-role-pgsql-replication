@@ -1,20 +1,20 @@
 - name: Stop PostgreSQL
   service:
-    name: postgresql-9.4
+    name: postgresql-{{ pgsql_version }}
     state: stopped
 
 - name: Clear out data directory
-  shell: rm -rf /var/lib/pgsql/9.4/data/*
+  shell: rm -rf {{ pgsqlrep_data_path }}/*
 
 - name: Create base backup
-  command: pg_basebackup -X stream -D /var/lib/pgsql/9.4/data -h {{ postgresrep_master_address }} -U replicator
+  command: pg_basebackup -X stream -D {{ pgsqlrep_data_path }} -h {{ pgsqlrep_master_address }} -U replicator
   become: yes
   become_user: postgres
 
 - name: Create recovery.conf
   template:
     src: recovery.conf.j2
-    dest: /var/lib/pgsql/9.4/data/recovery.conf
+    dest: "{{ pgsqlrep_data_path }}/recovery.conf"
     owner: postgres
     group: postgres
     mode: 0644
@@ -23,7 +23,7 @@
   lineinfile:
     state: present
     backup: yes
-    dest: /var/lib/pgsql/9.4/data/postgresql.conf
+    dest: "{{ pgsqlrep_data_path }}/postgresql.conf"
     regexp: '^#?hot_standby = \w+(\s+#.*)'
     line: 'hot_standby = yes\1'
     backrefs: yes
@@ -32,6 +32,6 @@
 
 - name: Start and enable PostgreSQL
   service:
-    name: postgresql-9.4
+    name: postgresql-{{ pgsql_version }}
     state: started
     enabled: yes
