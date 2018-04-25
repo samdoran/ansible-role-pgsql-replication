@@ -174,12 +174,12 @@ If the primary database node goes down, here is a playbook that can be used to f
   hosts: database_replica
   become: yes
 
-    tasks:
-      - import_role:
-          name: samdoran.pgsql-replication
-          tasks_from: pgsql_version.yml
-
   tasks:
+    - name: Get the current PostgreSQL Version
+      import_role:
+        name: samdoran.pgsql-replication
+        tasks_from: pgsql_version.yml
+
     - name: Promote secondary PostgreSQL server to primary
       command: /usr/pgsql-{{ pgsql_version }}/bin/pg_ctl promote
       become_user: postgres
