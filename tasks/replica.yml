@@ -7,7 +7,7 @@
   shell: rm -rf {{ pgsqlrep_data_path }}/*
 
 - name: Create base backup
-  command: pg_basebackup -X stream -D {{ pgsqlrep_data_path }} -h {{ pgsqlrep_master_address }} -U replicator
+  command: pg_basebackup -X stream -D {{ pgsqlrep_data_path }} -h {{ pgsqlrep_master_address }} -U {{ pgsqlrep_user }}
   become: yes
   become_user: postgres
 

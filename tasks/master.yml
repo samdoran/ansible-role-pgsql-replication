@@ -21,6 +21,6 @@
     state: present
     dest: "{{ pgsqlrep_data_path }}/pg_hba.conf"
     regexp: 'host.*replication.*{{ item }}/32.*trust'
-    line: 'host    replication    replicator  {{ item }}/32 trust'
+    line: 'host    replication    {{ pgsqlrep_user }}  {{ item }}/32 trust'
   with_items: "{{ pgsqlrep_replica_address }}"
   notify: restart postgresql
