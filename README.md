@@ -3,7 +3,9 @@ PostgreSQL Streaming Replication
 =========
 [![Galaxy](https://img.shields.io/badge/galaxy-samdoran.pgsql--replication-blue.svg?style=flat)](https://galaxy.ansible.com/samdoran/pgsql-replication)
 
-Configure PostgreSQL streaming replication between two nodes. This role was developed and tested for use on PostgreSQL for setting up a redundant database backend for [Ansible Tower](https://www.ansible.com/tower). This will not configure advanced clustering but will configure two PostgreSQL nodes in a master/replica configuration.
+Configure PostgreSQL streaming replication between two or more nodes. This role was developed and tested for use on PostgreSQL for setting up a redundant database backend for [Ansible Tower](https://www.ansible.com/tower). This will not configure advanced clustering but will configure two PostgreSQL nodes in a master/replica configuration.
+
+Each host defined in `pgsqlrep_group_name` will be added to the `pg_hba.conf` on the master node.
 
 Thes role depends on the roles included with the Ansible Tower installer.
 
@@ -46,12 +48,11 @@ Role Variables
 | `pgsqlrep_wal_keep_segments` | `100` | Max number of WAL segments. |
 | `pgsqlrep_synchronous_commit` | `local` | Set to `on`, `local`, or `off`. Setting to `on` will cause the master to stop accepting writes in the replica goes down. See [documentation](https://www.postgresql.org/docs/9.1/static/runtime-config-wal.html#GUC-SYNCHRONOUS-COMMIT) |
 | `pgsqlrep_application_name` | `awx` | Application name used for synchronization. |
-| `pgsqlrep_group_name` | `database_replica` | Name of the group that contains the replica database. |
-| `pgsqlrep_group_name_master` | `database` | Name of the gorup that contains the master database. |
+| `pgsqlrep_group_name` | `database_replica` | Name of the group that contains the replica database nodes. |
+| `pgsqlrep_group_name_master` | `database` | Name of the gorup that contains the master database node. |
 | `pgsqlrep_master_address` | `[default IPv4 of the master]` | If you need something other than the default IPv4 address, for exaample, FQDN, define it here. |
-| `pgsqlrep_replica_address` | `[default IPv4 of the replica` | If you need something other than the default IPv4 address, for exaample, FQDN, define it here. |
+| `pgsqlrep_replica_address` | `[default IPv4 of the replica(s)]` | If you need something other than the default IPv4 address, for exaample, FQDN, define it here. |
 | `pgsqlrep_postgres_conf_lines` | `[see defaults/main.yml]` | Lines in `postgres.conf` that are set in order to enable streaming replication. |
-| `pgsqlrep_pg_hba_conf_lines` | `[see defaults/main.yml]` | Lines to add to `pg_hba.conf` that allow replica to connect to master. |
 
 
 Dependencies

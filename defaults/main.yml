@@ -15,7 +15,7 @@ pgsqlrep_group_name: database_replica
 pgsqlrep_group_name_master: database
 
 pgsqlrep_master_address: "{{ hostvars[groups[pgsqlrep_group_name_master][0]].ansible_default_ipv4.address }}"
-pgsqlrep_replica_address: "{{ hostvars[groups[pgsqlrep_group_name][0]].ansible_default_ipv4.address }}"
+pgsqlrep_replica_address: "{{ groups[pgsqlrep_group_name] | map('extract', hostvars, 'ansible_default_ipv4') | map(attribute='address') | list }}"
 
 pgsqlrep_postgres_conf_lines:
   - regexp: '#?wal_level = \w+(\s+#.*)'
@@ -32,7 +32,3 @@ pgsqlrep_postgres_conf_lines:
 
   - regexp: '#?synchronous_commit = \w+(\s+#.*)'
     line: 'synchronous_commit = {{ pgsqlrep_synchronous_commit }}\1'
-
-pgsqlrep_pg_hba_conf_lines:
-  - regexp: 'host.*replication.*/32.*trust'
-    line: 'host    replication    replicator  {{ pgsqlrep_replica_address }}/32 trust'
