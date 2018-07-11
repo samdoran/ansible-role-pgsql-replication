@@ -44,7 +44,7 @@ Role Variables
 | `pgsqlrep_user` | `replicator` | User account that will be created and used for replication. |
 | `pgsqlrep_password` | `[undefined]` | Password for replication account |
 | `pgsqlrep_wal_level` | `hot_standby` | WAL level |
-| `pgsqlrep_max_wal_senders` | `2` | Max number of WAL senders. Don't set this less than two otherwise the initial sync will fail. |
+| `pgsqlrep_max_wal_senders` | `groups[pgsqlrep_group_name] | length * 2` | Max number of WAL senders. The minimum needed is two per replica: one for the connection to the master and another for the initial sync. |
 | `pgsqlrep_wal_keep_segments` | `100` | Max number of WAL segments. |
 | `pgsqlrep_synchronous_commit` | `local` | Set to `on`, `local`, or `off`. Setting to `on` will cause the master to stop accepting writes in the replica goes down. See [documentation](https://www.postgresql.org/docs/9.1/static/runtime-config-wal.html#GUC-SYNCHRONOUS-COMMIT) |
 | `pgsqlrep_application_name` | `awx` | Application name used for synchronization. |
