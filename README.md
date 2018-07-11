@@ -68,6 +68,10 @@ Example Playbook
 
 Install this role alongside the roles used by the Ansible Tower installer (bundled or standalone). Then run the example playbook.
 
+**Note:** This example playbook overrides the IP address for the master and replica nodes by getting the last IP from the list of all IPs on the system. This is just an example of how to override this value if the default IP address does not provide the desired IP.
+
+**Note:** If you want to allow _all_ IP addresses to connect to the master node, use `pgsqlrep_replica_address: `"{{ groups[pgsqlrep_group_name] | map('extract', hostvars, 'ansible_all_ipv4_addresses') | flatten }}"`.
+
 ```
 ansible-galaxy install samdoran.pgsql-replication -p roles
 ansible-playbook -b -i inventory samdoran.pgsql-replication.yml
