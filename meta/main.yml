@@ -1,4 +1,5 @@
 galaxy_info:
+  role_name: pgsql-replication
   author: Sam Doran
   description: "Configure PostgreSQL replication between two nodes"
   company: Red Hat
