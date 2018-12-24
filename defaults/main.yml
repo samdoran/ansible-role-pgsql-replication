@@ -3,13 +3,13 @@ pg_port: 5432
 pgsqlrep_role: skip
 pgsqlrep_data_path: /var/lib/pgsql/{{ pgsql_version }}/data
 pgsqlrep_user: replicator
-#pgsqlrep_password: '' # Store this in an Ansible vault
+# pgsqlrep_password: '' # Store this in an Ansible vault
 pgsqlrep_wal_level: hot_standby
 pgsqlrep_max_wal_senders: "{{ groups[pgsqlrep_group_name] | length * 2 }}"
 pgsqlrep_wal_keep_segments: 100
 pgsqlrep_synchronous_commit: local
 pgsqlrep_application_name: awx
-bundle_install: False
+bundle_install: false
 
 pgsqlrep_group_name: database_replica
 pgsqlrep_group_name_master: database

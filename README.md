@@ -1,7 +1,8 @@
 
 PostgreSQL Streaming Replication
 =========
-[![Galaxy](https://img.shields.io/badge/galaxy-samdoran.pgsql--replication-blue.svg?style=flat)](https://galaxy.ansible.com/samdoran/pgsql-replication)
+[![Galaxy](https://img.shields.io/badge/galaxy-samdoran.pgsql_replication-blue.svg?style=flat)](https://galaxy.ansible.com/samdoran/pgsql_replication)
+[![Build Status](https://travis-ci.org/samdoran/ansible-role-pgsql-replication.svg?branch=master)](https://travis-ci.org/samdoran/ansible-role-pgsql-replication)
 
 Configure PostgreSQL streaming replication between two or more nodes. This role was developed and tested for use on PostgreSQL for setting up a redundant database backend for [Ansible Tower](https://www.ansible.com/tower). This will not configure advanced clustering but will configure two PostgreSQL nodes in a master/replica configuration.
 
@@ -73,8 +74,8 @@ Install this role alongside the roles used by the Ansible Tower installer (bundl
 **Note:** If you want to allow _all_ IP addresses to connect to the master node, use `pgsqlrep_replica_address: `"{{ groups[pgsqlrep_group_name] | map('extract', hostvars, 'ansible_all_ipv4_addresses') | flatten }}"`.
 
 ```
-ansible-galaxy install samdoran.pgsql-replication -p roles
-ansible-playbook -b -i inventory samdoran.pgsql-replication.yml
+ansible-galaxy install samdoran.pgsql_replication -p roles
+ansible-playbook -b -i inventory samdoran.pgsql_replication.yml
 ```
 
 ```yaml
@@ -151,7 +152,7 @@ ansible-playbook -b -i inventory samdoran.pgsql-replication.yml
 
   tasks:
     - import_role:
-        name: samdoran.pgsql-replication
+        name: samdoran.pgsql_replication
 
 - name: Configure PSQL replica
   hosts: database_replica
@@ -162,7 +163,7 @@ ansible-playbook -b -i inventory samdoran.pgsql-replication.yml
 
   tasks:
     - import_role:
-        name: samdoran.pgsql-replication
+        name: samdoran.pgsql_replication
 
 ```
 
@@ -213,4 +214,4 @@ If the primary database node goes down, here is a playbook that can be used to f
 License
 -------
 
-MIT
+Apache 2.0

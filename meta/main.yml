@@ -1,15 +1,15 @@
 galaxy_info:
-  role_name: pgsql-replication
+  role_name: pgsql_replication
   author: Sam Doran
   description: "Configure PostgreSQL replication between two nodes"
   company: Red Hat
-  license: MIT
+  license: Apache 2.0
   min_ansible_version: 2.5
 
   platforms:
-  - name: EL
-    versions:
-      - 7
+    - name: EL
+      versions:
+        - 7
 
   galaxy_tags:
     - database

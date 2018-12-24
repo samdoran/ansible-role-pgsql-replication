@@ -1,7 +1,7 @@
 - name: Configure master server
   lineinfile:
     state: present
-    backrefs: yes
+    backrefs: true
     dest: "{{ pgsqlrep_data_path }}/postgresql.conf"
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
@@ -13,7 +13,7 @@
     name: "{{ pgsqlrep_user }}"
     password: "{{ pgsqlrep_password }}"
     role_attr_flags: replication
-  become: True
+  become: true
   become_user: postgres
 
 - name: Add trust in pg_hba.conf

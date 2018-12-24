@@ -1,0 +1,35 @@
+language: python
+services: docker
+
+env:
+  global:
+    - ROLE_NAME: pgsql_replication
+  matrix:
+    # - MOLECULE_DISTRIBUTION: centos6
+    - MOLECULE_DISTRIBUTION: centos7
+    # - MOLECULE_DISTRIBUTION: rhel6
+    # - MOLECULE_DISTRIBUTION: rhel7
+    # - MOLECULE_DISTRIBUTION: ubuntu14
+    # - MOLECULE_DISTRIBUTION: ubuntu16
+    # - MOLECULE_DISTRIBUTION: ubuntu18
+    # - MOLECULE_DISTRIBUTION: debian8
+    # - MOLECULE_DISTRIBUTION: debian9
+    # - MOLECULE_DISTRIBUTION: fedora27
+    # - MOLECULE_DISTRIBUTION: fedora28
+    # - MOLECULE_DISTRIBUTION: fedora29
+
+install:
+  - pip install molecule docker
+
+before_script:
+  # Remove "ansible-role-" prefix from role name
+  - cd ../
+  - mv ansible-role-${ROLE_NAME/_/-} $ROLE_NAME
+  - cd $ROLE_NAME
+
+script:
+  # Run tests
+  - molecule test --all
+
+notifications:
+  webhooks: https://galaxy.ansible.com/api/v1/notifications/
