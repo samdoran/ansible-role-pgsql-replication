@@ -71,7 +71,7 @@ Install this role alongside the roles used by the Ansible Tower installer (bundl
 
 **Note:** This example playbook overrides the IP address for the master and replica nodes by getting the last IP from the list of all IPs on the system. This is just an example of how to override this value if the default IP address does not provide the desired IP.
 
-**Note:** If you want to allow _all_ IP addresses to connect to the master node, use `pgsqlrep_replica_address: `"{{ groups[pgsqlrep_group_name] | map('extract', hostvars, 'ansible_all_ipv4_addresses') | flatten }}"`.
+**Note:** If you want to allow _all_ IP addresses to connect to the master node, use `pgsqlrep_replica_address: "{{ groups[pgsqlrep_group_name] | map('extract', hostvars, 'ansible_all_ipv4_addresses') | flatten }}"`.
 
 ```
 ansible-galaxy install samdoran.pgsql_replication -p roles
@@ -106,7 +106,7 @@ ansible-playbook -b -i inventory samdoran.pgsql_replication.yml
     - import_role:
         name: nginx
       vars:
-        nginx_exec_vars_only: true
+        nginx_exec_vars_only: yes
 
     - import_role:
         name: repos_el
@@ -115,8 +115,8 @@ ansible-playbook -b -i inventory samdoran.pgsql_replication.yml
     - import_role:
         name: packages_el
       vars:
-        packages_el_install_tower: false
-        packages_el_install_postgres: true
+        packages_el_install_tower: no
+        packages_el_install_postgres: yes
       when: ansible_os_family == "RedHat"
 
     - import_role:

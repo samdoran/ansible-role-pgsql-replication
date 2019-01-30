@@ -4,8 +4,6 @@ driver:
   name: docker
 lint:
   name: yamllint
-  options:
-    config-file: molecule/default/yaml-lint.yml
 platforms:
   - name: pgsql-replication-test
     image: "samdoran/${MOLECULE_DISTRIBUTION:-centos7}-ansible:latest"
@@ -16,6 +14,8 @@ platforms:
     pre_build_image: true
 provisioner:
   name: ansible
+  options:
+    syntax-check: true
   lint:
     name: ansible-lint
     options:
