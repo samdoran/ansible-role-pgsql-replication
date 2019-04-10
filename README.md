@@ -183,7 +183,7 @@ If the primary database node goes down, here is a playbook that can be used to f
   tasks:
     - name: Get the current PostgreSQL Version
       import_role:
-        name: samdoran.pgsql-replication
+        name: samdoran.pgsql_replication
         tasks_from: pgsql_version.yml
 
     - name: Promote secondary PostgreSQL server to primary
