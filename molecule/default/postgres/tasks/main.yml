@@ -1,0 +1,32 @@
+---
+- import_tasks: vars.yml
+
+- name: Check to see if Postgres is installed
+  command: psql -tAc "select version()"
+  become: True
+  become_user: postgres
+  changed_when: False
+  ignore_errors: True
+  register: psql
+
+- name: Set upgrade flag if Postgres is installed and not at version 9.6
+  set_fact:
+    upgrade_postgres: "{{ psql.rc == 0 and '9.6' not in psql.stdout }}"
+  when: not psql is failed
+
+- name: Install postgres and other packages
+  yum:
+    name: "{{ postgresql_packages }}"
+    enablerepo: "{{ ansible_tower_dependency_repo }}"
+    disable_gpg_check: '{{ not gpgcheck | bool }}'
+    state: installed
+
+- include_tasks: upgrade_postgres.yml
+  when: upgrade_postgres | default(false) | bool
+
+- include_tasks: init.yml
+  when: "postgres_exec_vars_only == false"
+
+- include_tasks: conf.yml
+  when: "postgres_exec_vars_only == false"
+

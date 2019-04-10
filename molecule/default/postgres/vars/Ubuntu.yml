@@ -1,0 +1,6 @@
+---
+pg_conf_dir: '/etc/postgresql/9.6/main'
+pg_data_dir: '/var/lib/postgresql/9.6/main'
+pg_conf_location: '{{ pg_conf_dir }}/postgresql.conf'
+pg_hba_location: '{{ pg_conf_dir }}/pg_hba.conf'
+postgres_init_name: 'postgresql'

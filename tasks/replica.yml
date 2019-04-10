@@ -8,7 +8,7 @@
 
 - name: Create base backup
   command: pg_basebackup -X stream -D {{ pgsqlrep_data_path }} -h {{ pgsqlrep_master_address }} -U {{ pgsqlrep_user }}
-  become: true
+  become: yes
   become_user: postgres
 
 - name: Create recovery.conf
@@ -22,16 +22,16 @@
 - name: Enable hot standby
   lineinfile:
     state: present
-    backup: true
+    backup: yes
     dest: "{{ pgsqlrep_data_path }}/postgresql.conf"
     regexp: '^#?hot_standby = \w+(\s+#.*)'
     line: 'hot_standby = yes\1'
-    backrefs: true
-  become: true
+    backrefs: yes
+  become: yes
   become_user: postgres
 
 - name: Start and enable PostgreSQL
   service:
     name: postgresql-{{ pgsql_version }}
     state: started
-    enabled: true
+    enabled: yes

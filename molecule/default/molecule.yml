@@ -4,27 +4,56 @@ driver:
   name: docker
 lint:
   name: yamllint
+  options:
+    config-file: molecule/default/yamllint.yml
 platforms:
   - name: pgsql-replication-test
+    groups:
+      - tower
+      - database
+      - database_replica
     image: "samdoran/${MOLECULE_DISTRIBUTION:-centos7}-ansible:latest"
     command: ${MOLECULE_COMMAND:-""}
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    privileged: true
-    pre_build_image: true
+    privileged: yes
+    pre_build_image: yes
 provisioner:
   name: ansible
-  options:
-    syntax-check: true
   lint:
     name: ansible-lint
     options:
       x:
-        - ANSIBLE0010
+        - 204  # Lines should be no longer than 160 chars
+        - 403  # Package installs should not use latest
+        - 502  # All tasks should be named
+        - 301
+        - 302
+      exclude:
+        - molecule/default/postgres
+        - molecule/default/repos_el
   playbooks:
     converge: ${MOLECULE_PLAYBOOK:-playbook.yml}
+  inventory:
+    group_vars:
+      all:
+        tower_package_name: 'ansible-tower'
+        tower_package_version: '3.4.3'
+        tower_package_release: '1'
 scenario:
   name: default
+  test_sequence:
+    - lint
+    - destroy
+    - dependency
+    - syntax
+    - create
+    - prepare
+    - converge
+    - side_effect
+    - verify
+    - cleanup
+    - destroy
 verifier:
   name: testinfra
   lint:

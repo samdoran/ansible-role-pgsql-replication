@@ -1,0 +1,26 @@
+postgres_run_dir: '/var/run/postgresql'
+postgres_username: 'awx'
+postgres_database: 'awx'
+postgres_allowed_ipv4: '127.0.0.1/32'
+postgres_allowed_ipv6: '::1/128'
+#postgres_password: 'password'
+#postgres_host: None
+#postgres_port: None
+postgres_exec_vars_only: no
+postgresql_packages:
+  - postgresql96-server
+  - postgresql96-contrib
+  - python-psycopg2
+  - python-setuptools
+  - libselinux-python
+  - setools-libs
+  - yum-utils
+  - sudo
+  - acl
+ansible_tower_repo: ansible-tower
+ansible_tower_dependency_repo: ansible-tower-dependencies
+gpgcheck: yes
+max_postgres_connections: 1024
+postgres_shared_memory_size: "{{ (ansible_memtotal_mb*0.3)|int }}"
+postgres_work_mem: "{{ (ansible_memtotal_mb*0.03)|int }}"
+postgres_maintenance_work_mem: "{{ (ansible_memtotal_mb*0.04)|int }}"

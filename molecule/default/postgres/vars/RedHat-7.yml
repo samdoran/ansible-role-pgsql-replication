@@ -1,0 +1,6 @@
+---
+pg_conf_dir: '/var/lib/pgsql/9.6/data'
+pg_conf_location: '{{ pg_conf_dir }}/postgresql.conf'
+pg_hba_location: '{{ pg_conf_dir }}/pg_hba.conf'
+postgres_init_name: 'postgresql-9.6'
+pg_initdb_command: '/usr/pgsql-9.6/bin/postgresql96-setup initdb'

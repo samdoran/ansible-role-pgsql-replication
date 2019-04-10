@@ -1,11 +1,22 @@
 - hosts: all
-  become: true
+  become: yes
+
+  vars:
+    pgsqlrep_password: 'SammyDrakeSaturn'
+    postgres_password: 'GnomeTutuPig'
+    pgsqlrep_role: master
 
   tasks:
     - debug:
         msg: >-
           Testing with Ansible {{ ansible_version.full }} using Python {{ ansible_facts.python_version }}
           on {{ ansible_facts.distribution }} {{ ansible_facts.distribution_version }}
+
+    - import_role:
+        name: repos_el
+
+    - import_role:
+        name: postgres
 
     - import_role:
         name: pgsql_replication

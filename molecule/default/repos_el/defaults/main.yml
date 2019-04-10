@@ -1,0 +1,47 @@
+---
+# Ansible repository location. This should be the
+# root of the repo, and does not include the /deb or /rpm path
+aw_repo_url: "http://releases.ansible.com/ansible-tower"
+
+# Indicate the path to the AWS RHUI repository file
+redhat_aws_rhui_repo_path: '/etc/yum.repos.d/redhat-rhui.repo'
+
+# Specify RHEL AWS RHUI repositories to enable (used in vars/*.yml).
+redhat_aws_rhui_repos: []
+
+# Indicate the path to the non-AWS RHUI repository file
+redhat_rhui_repo_path: '/etc/yum.repos.d/rh-cloud.repo'
+
+# Specify RHEL non-AWS RHUI repositories to enable (used in vars/*.yml).
+redhat_rhui_repos: []
+
+# Indicate the path to the subscription-manager repository file
+redhat_rhsm_repo_path: '/etc/yum.repos.d/redhat.repo'
+redhat_rhsm_cert_path: '/etc/pki/consumer/cert.pem'
+redhat_rhsm_conf_path: '/etc/rhsm/rhsm.conf'
+
+# Specify RHEL subscription-manager repositories to enable (used in vars/*.yml).
+redhat_rhsm_repos: []
+
+# Specify the path to the Oracle Linux repository file
+oracle_linux_repo_path: '/etc/yum.repos.d/public-yum-ol{{ ansible_distribution_major_version }}.repo'
+
+# Specify Oracle Linux repositories to enable (used in vars/*.yml).
+oracle_linux_repos: []
+
+# Specify release packages where we install other repos from
+yum_repo_packages: []
+
+# Specify the format to use when installing tower with the 'yum' module.
+tower_package_rpm: '{{ packages_el_tower_package_name }} == {{ packages_el_tower_package_version }}'
+
+# Specify epel-release RPM locations (used in vars/*.yml).
+epel_release_url_el7: 'http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm'
+
+bundle_install: false
+bundle_install_folder: "/var/lib/tower-bundle"
+
+# Pre-defined dynamically determined variables to satisfy ansible 1.9 and ansible 2.0 deprecation warnings
+yum_online_repo_files: []
+yum_repo_keys: []
+

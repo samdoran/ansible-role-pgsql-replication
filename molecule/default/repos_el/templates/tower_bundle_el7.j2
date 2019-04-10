@@ -1,0 +1,15 @@
+[ansible-tower]
+name=Ansible Tower Offline Repository $releasever $basearch
+baseurl=file://{{ bundle_install_folder }}/ansible-tower
+enabled=0
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-ansible-release
+cost=10
+
+[ansible-tower-dependencies]
+name=Ansible Tower Offline Repository $releasever $basearch
+baseurl=file://{{ bundle_install_folder }}/ansible-tower-dependencies
+enabled=0
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-ansible-release
+cost=10
