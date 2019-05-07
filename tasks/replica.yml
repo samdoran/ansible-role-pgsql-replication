@@ -14,7 +14,7 @@
 - name: Create recovery.conf
   template:
     src: recovery.conf.j2
-    dest: "{{ pgsqlrep_config_path }}/recovery.conf"
+    dest: "{{ pgsqlrep_data_path }}/recovery.conf"
     owner: postgres
     group: postgres
     mode: '0644'
