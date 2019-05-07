@@ -15,11 +15,10 @@ def parse_psql_version(version_string):
     Example output from psql --version
     psql (PostgreSQL) 9.6.12
     psql (PostgreSQL) 10.7
+    psql (PostgreSQL) 10.6 (Ubuntu 10.6-0ubuntu0.18.04.1)
     """
     to_native(version_string)
-    version = version_string.split(' ')[-1]
-    return '.'.join(version.split('.')[:2])
-
+    return re.search('[0-9]{1,}\.[0-9]{1,}',version_string).group()
 
 def get_psql_service_name(version):
     version = to_native(version)
