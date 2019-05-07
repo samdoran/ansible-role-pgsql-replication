@@ -1,6 +1,6 @@
 - name: Stop PostgreSQL
   service:
-    name: "{{ pgsql_version | pgsql_service_string }}"
+    name: postgresql
     state: stopped
 
 - name: Clear out data directory
