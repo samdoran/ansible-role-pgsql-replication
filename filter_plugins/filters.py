@@ -8,6 +8,8 @@ from ansible.module_utils._text import to_native
 
 from distutils.version import LooseVersion
 
+import re
+
 
 def parse_psql_version(version_string):
     """Take the raw output of psql --version and return major.minor version string
