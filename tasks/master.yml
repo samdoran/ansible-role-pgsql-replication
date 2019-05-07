@@ -2,7 +2,7 @@
   lineinfile:
     state: present
     backrefs: yes
-    dest: "{{ pgsqlrep_data_path }}/postgresql.conf"
+    dest: "{{ pgsqlrep_config_path }}/postgresql.conf"
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
   loop: "{{ pgsqlrep_postgres_conf_lines }}"
