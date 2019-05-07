@@ -32,6 +32,6 @@
 
 - name: Start and enable PostgreSQL
   service:
-    name: "{{ pgsql_version | pgsql_service_string }}"
+    name: postgresql
     state: started
     enabled: yes
