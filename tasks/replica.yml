@@ -14,7 +14,7 @@
 - name: Create recovery.conf
   template:
     src: recovery.conf.j2
-    dest: "{{ pgsqlrep_data_path }}/recovery.conf"
+    dest: "{{ pgsqlrep_config_path }}/recovery.conf"
     owner: postgres
     group: postgres
     mode: '0644'
@@ -23,7 +23,7 @@
   lineinfile:
     state: present
     backup: yes
-    dest: "{{ pgsqlrep_data_path }}/postgresql.conf"
+    dest: "{{ pgsqlrep_config_path }}/postgresql.conf"
     regexp: '^#?hot_standby = \w+(\s+#.*)'
     line: 'hot_standby = yes\1'
     backrefs: yes
