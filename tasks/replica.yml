@@ -4,7 +4,17 @@
     state: stopped
 
 - name: Clear out data directory
-  shell: rm -rf {{ pgsqlrep_data_path }}/*
+  file:
+    path: "{{ pgsqlrep_data_path }}"
+    state: absent
+
+- name: Create empty data directory
+  file:
+    path: "{{ pgsqlrep_data_path }}"
+    state: directory
+    owner: postgres
+    group: postgres
+    mode: '0700'
 
 - name: Create base backup
   command: pg_basebackup -X stream -D {{ pgsqlrep_data_path }} -h {{ pgsqlrep_master_address }} -U {{ pgsqlrep_user }}
