@@ -94,7 +94,7 @@ ansible-playbook -b -i inventory samdoran.pgsql_replication.yml
       file:
         path: "{{ item.path }}"
         state: absent
-      with_items: "{{ recovery_conf_path.files }}"
+      loop: "{{ recovery_conf_path.files }}"
 
     - name: Add replica to database group
       add_host:

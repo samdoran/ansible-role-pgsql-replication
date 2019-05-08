@@ -1,11 +1,6 @@
-- hosts: all
+- name: Install PostgreSQL on all nodes
+  hosts: database:database_replica
   become: yes
-
-  vars:
-    pgsqlrep_password: 'SammyDrakeSaturn'
-    postgres_password: 'GnomeTutuPig'
-    pgsqlrep_role: master
-
   tasks:
     - debug:
         msg: >-
@@ -17,6 +12,29 @@
 
     - import_role:
         name: postgres
+
+- name: Configure PSQL master server
+  hosts: database[0]
+  tasks:
+    - import_role:
+        name: pgsql_replication
+
+
+- name: Configure PSQL replica
+  hosts: database_replica
+  tasks:
+    - name: Find recovery.conf
+      find:
+        paths: /var/lib/pgsql
+        recurse: yes
+        patterns: recovery.conf
+      register: recovery_conf_path
+
+    - name: Remove recovery.conf
+      file:
+        path: "{{ item.path }}"
+        state: absent
+      with_items: "{{ recovery_conf_path.files }}"
 
     - import_role:
         name: pgsql_replication

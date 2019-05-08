@@ -7,9 +7,30 @@ lint:
   options:
     config-file: molecule/default/yamllint.yml
 platforms:
-  - name: pgsql-replication-test
+  - name: pgsql-replication-test-master
     groups:
       - tower
+      - database
+    image: "samdoran/${MOLECULE_DISTRIBUTION:-centos7}-ansible:latest"
+    command: ${MOLECULE_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    privileged: yes
+    pre_build_image: yes
+
+  - name: pgsql-replication-test-replica1
+    groups:
+      - database
+      - database_replica
+    image: "samdoran/${MOLECULE_DISTRIBUTION:-centos7}-ansible:latest"
+    command: ${MOLECULE_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    privileged: yes
+    pre_build_image: yes
+
+  - name: pgsql-replication-test-replica2
+    groups:
       - database
       - database_replica
     image: "samdoran/${MOLECULE_DISTRIBUTION:-centos7}-ansible:latest"
@@ -40,6 +61,12 @@ provisioner:
         tower_package_name: 'ansible-tower'
         tower_package_version: '3.4.3'
         tower_package_release: '1'
+        pgsqlrep_password: 'SammyDrakeSaturn'
+        postgres_password: 'GnomeTutuPig'
+      database:
+        pgsqlrep_role: master
+      database_replica:
+        pgsqlrep_role: replica
 scenario:
   name: default
   test_sequence:
