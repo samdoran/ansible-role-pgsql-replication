@@ -11,7 +11,7 @@ platforms:
     groups:
       - tower
       - database
-    image: "samdoran/${MOLECULE_DISTRIBUTION:-centos7}-ansible:latest"
+    image: "quay.io/samdoran/${MOLECULE_DISTRIBUTION:-centos7}-ansible:latest"
     command: ${MOLECULE_COMMAND:-""}
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
@@ -22,7 +22,7 @@ platforms:
     groups:
       - database
       - database_replica
-    image: "samdoran/${MOLECULE_DISTRIBUTION:-centos7}-ansible:latest"
+    image: "quay.io/samdoran/${MOLECULE_DISTRIBUTION:-centos7}-ansible:latest"
     command: ${MOLECULE_COMMAND:-""}
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
@@ -33,7 +33,7 @@ platforms:
     groups:
       - database
       - database_replica
-    image: "samdoran/${MOLECULE_DISTRIBUTION:-centos7}-ansible:latest"
+    image: "quay.io/samdoran/${MOLECULE_DISTRIBUTION:-centos7}-ansible:latest"
     command: ${MOLECULE_COMMAND:-""}
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
