@@ -2,10 +2,9 @@ dependency:
   name: galaxy
 driver:
   name: docker
-lint:
-  name: yamllint
-  options:
-    config-file: molecule/default/yamllint.yml
+lint: |
+  ansible-lint -x 204,403,502,301,302
+  yamllint -c molecule/default/yamllint.yml .
 platforms:
   - name: pgsql-replication-test-master
     groups:
@@ -41,25 +40,16 @@ platforms:
     pre_build_image: yes
 provisioner:
   name: ansible
-  lint:
-    name: ansible-lint
-    options:
-      x:
-        - 204  # Lines should be no longer than 160 chars
-        - 403  # Package installs should not use latest
-        - 502  # All tasks should be named
-        - 301
-        - 302
-      exclude:
-        - molecule/default/postgres
-        - molecule/default/repos_el
+  config_options:
+    defaults:
+      stdout_callback: debug
   playbooks:
-    converge: ${MOLECULE_PLAYBOOK:-playbook.yml}
+    converge: ${MOLECULE_PLAYBOOK:-converge.yml}
   inventory:
     group_vars:
       all:
         tower_package_name: 'ansible-tower'
-        tower_package_version: '3.4.3'
+        tower_package_version: '3.6.2'
         tower_package_release: '1'
         pgsqlrep_password: 'SammyDrakeSaturn'
         postgres_password: 'GnomeTutuPig'
@@ -69,19 +59,5 @@ provisioner:
         pgsqlrep_role: replica
 scenario:
   name: default
-  test_sequence:
-    - lint
-    - destroy
-    - dependency
-    - syntax
-    - create
-    - prepare
-    - converge
-    - side_effect
-    - verify
-    - cleanup
-    - destroy
 verifier:
-  name: testinfra
-  lint:
-    name: flake8
+  name: ansible

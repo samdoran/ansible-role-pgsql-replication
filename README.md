@@ -8,12 +8,12 @@ Configure PostgreSQL streaming replication between two or more nodes. This role 
 
 Each host defined in `pgsqlrep_group_name` will be added to the `pg_hba.conf` on the master node.
 
-Thes role depends on the roles included with the Ansible Tower installer.
+This role leverages included with the [Ansible Tower installer](https://releases.ansible.com/ansible-tower/setup/).
 
 Requirements
 ------------
 
-Ansible Tower installer roles in your `roles_path` as well as the Ansible Tower inventory file.
+Ansible Tower installer roles in your `roles_path` as well as a properly configured Ansible Tower inventory file.
 
 Add the replica database node to the Ansible Tower inventory file and define `pgsqlrep_role` for each database host.
 
