@@ -1,0 +1,19 @@
+- name: Download Tower roles
+  hosts: localhost
+  connection: local
+  become: no
+
+  tasks:
+    - name: Download Tower installer
+      get_url:
+        url: https://releases.ansible.com/ansible-tower/setup/ansible-tower-setup-latest.tar.gz
+        dest: "{{ playbook_dir }}"
+
+    - name: Extract roles from Tower installer
+      unarchive:
+        src: ansible-tower-setup-latest.tar.gz
+        dest: "{{ playbook_dir }}"
+        extra_opts:
+          - '--wildcards'
+          - '--strip-components=1'
+          - '*/roles'
