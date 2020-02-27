@@ -49,8 +49,7 @@ provisioner:
     group_vars:
       all:
         tower_package_name: 'ansible-tower'
-        tower_package_version: '3.6.2'
-        tower_package_release: '1'
+        tower_package_version: '3.6.3'
         pgsqlrep_password: 'SammyDrakeSaturn'
         postgres_password: 'GnomeTutuPig'
       database:

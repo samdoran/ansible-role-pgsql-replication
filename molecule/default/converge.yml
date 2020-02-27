@@ -11,7 +11,20 @@
         name: repos_el
 
     - import_role:
+        name: packages_el
+      vars:
+        packages_el_install_tower: no
+        packages_el_install_postgres: yes
+        existing_pg_dir: '/var/lib/pgsql/9.6/data'
+        config_dynamic_database: internal
+
+    - import_role:
         name: postgres
+      vars:
+        max_postgres_connections: 1024
+        postgres_shared_memory_size: "{{ (ansible_memtotal_mb*0.3)|int }}"
+        postgres_work_mem: "{{ (ansible_memtotal_mb*0.03)|int }}"
+        postgres_maintenance_work_mem: "{{ (ansible_memtotal_mb*0.04)|int }}"
 
 - name: Configure PSQL master server
   hosts: database[0]
