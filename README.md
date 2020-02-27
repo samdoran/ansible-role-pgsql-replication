@@ -54,15 +54,14 @@ Role Variables
 | `pgsqlrep_master_address` | `[default IPv4 of the master]` | If you need something other than the default IPv4 address, for exaample, FQDN, define it here. |
 | `pgsqlrep_replica_address` | `[default IPv4 of the replica(s)]` | If you need something other than the default IPv4 address, for exaample, FQDN, define it here. |
 | `pgsqlrep_postgres_conf_lines` | `[see defaults/main.yml]` | Lines in `postgres.conf` that are set in order to enable streaming replication. |
+| `pgsqlrep_data_path` | `[see defaults/main.yml]` | Path to PostgreSQL data which is selected based on the installed PostgreSQL version. |
 
 
 Dependencies
 ------------
 
-- nginx
 - repos_el
 - postgresql
-- firewall
 
 Example Playbook
 ----------------
@@ -75,7 +74,7 @@ Install this role alongside the roles used by the Ansible Tower installer (bundl
 
 ```
 ansible-galaxy install samdoran.pgsql_replication -p roles
-ansible-playbook -b -i inventory samdoran.pgsql_replication.yml
+ansible-playbook -b -i inventory pgsql_replication.yml
 ```
 
 ```yaml
@@ -102,11 +101,6 @@ ansible-playbook -b -i inventory samdoran.pgsql_replication.yml
         groups: database
       tags:
         - always
-
-    - import_role:
-        name: nginx
-      vars:
-        nginx_exec_vars_only: yes
 
     - import_role:
         name: repos_el
