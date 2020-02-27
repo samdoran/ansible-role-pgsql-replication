@@ -17,8 +17,8 @@ bundle_install: no
 pgsqlrep_group_name: database_replica
 pgsqlrep_group_name_master: database
 
-pgsqlrep_master_address: "{{ hostvars[groups[pgsqlrep_group_name_master][0]].ansible_default_ipv4.address }}"
-pgsqlrep_replica_address: "{{ groups[pgsqlrep_group_name] | map('extract', hostvars, 'ansible_default_ipv4') | map(attribute='address') | list }}"
+pgsqlrep_master_address: "{{ hostvars[groups[pgsqlrep_group_name_master][0]]['ansible_facts']['default_ipv4']['address'] }}"
+pgsqlrep_replica_address: "{{ groups[pgsqlrep_group_name] | map('extract', hostvars, 'ansible_facts') | map(attribute='default_ipv4') | map(attribute='address') | list }}"
 
 pgsqlrep_postgres_conf_lines:
   - regexp: '#?wal_level = \w+(\s+#.*)'
