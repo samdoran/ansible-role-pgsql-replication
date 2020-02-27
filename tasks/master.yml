@@ -2,7 +2,7 @@
   lineinfile:
     state: present
     backrefs: yes
-    dest: "{{ pgsqlrep_data_path }}/postgresql.conf"
+    dest: "{{ pgsqlrep_data_path[pgsql_major_version] }}/postgresql.conf"
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
   loop: "{{ pgsqlrep_postgres_conf_lines }}"
@@ -19,7 +19,7 @@
 - name: Add trust in pg_hba.conf
   lineinfile:
     state: present
-    dest: "{{ pgsqlrep_data_path }}/pg_hba.conf"
+    dest: "{{ pgsqlrep_data_path[pgsql_major_version] }}/pg_hba.conf"
     regexp: 'host.*replication.*{{ item }}/32.*trust'
     line: 'host    replication    {{ pgsqlrep_user }}  {{ item }}/32 trust'
   loop: "{{ pgsqlrep_replica_address }}"

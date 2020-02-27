@@ -25,9 +25,10 @@ def get_psql_service_name(version):
     version = to_native(version)
     if LooseVersion(version) < LooseVersion('10'):
         version = '.'.join(version.split('.')[:2])
+        return 'postgresql-{0}'.format(version)
     elif LooseVersion(version) >= LooseVersion('10'):
         version = version.split('.')[0]
-    return 'postgresql-{0}'.format(version)
+        return 'rh-postgresql{0}-postgresql'.format(version)
 
 
 class FilterModule:

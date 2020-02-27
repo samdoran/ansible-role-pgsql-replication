@@ -5,26 +5,33 @@
 
 - name: Clear out data directory
   file:
-    path: "{{ pgsqlrep_data_path }}"
+    path: "{{ pgsqlrep_data_path[pgsql_major_version] }}"
     state: absent
 
 - name: Create empty data directory
   file:
-    path: "{{ pgsqlrep_data_path }}"
+    path: "{{ pgsqlrep_data_path[pgsql_major_version] }}"
     state: directory
     owner: postgres
     group: postgres
     mode: '0700'
 
 - name: Create base backup
-  command: pg_basebackup -X stream -D {{ pgsqlrep_data_path }} -h {{ pgsqlrep_master_address }} -U {{ pgsqlrep_user }}
+  command: pg_basebackup -X stream -D {{ pgsqlrep_data_path[pgsql_major_version] }} -h {{ pgsqlrep_master_address }} -U {{ pgsqlrep_user }}
+  environment:
+    PATH: /opt/rh/rh-postgresql10/root/usr/bin:{{ ansible_env.PATH }}
+    LIBRARY_PATH: /opt/rh/rh-postgresql10/root/usr/lib64
+    JAVACONFDIRS: '/etc/opt/rh/rh-postgresql10/java:/etc/java'
+    LD_LIBRARY_PATH: /opt/rh/rh-postgresql10/root/usr/lib64
+    CPATH: /opt/rh/rh-postgresql10/root/usr/include
+    PKG_CONFIG_PATH: /opt/rh/rh-postgresql10/root/usr/lib64/pkgconfig
   become: yes
   become_user: postgres
 
 - name: Create recovery.conf
   template:
     src: recovery.conf.j2
-    dest: "{{ pgsqlrep_data_path }}/recovery.conf"
+    dest: "{{ pgsqlrep_data_path[pgsql_major_version] }}/recovery.conf"
     owner: postgres
     group: postgres
     mode: '0644'
@@ -33,7 +40,7 @@
   lineinfile:
     state: present
     backup: yes
-    dest: "{{ pgsqlrep_data_path }}/postgresql.conf"
+    dest: "{{ pgsqlrep_data_path[pgsql_major_version] }}/postgresql.conf"
     regexp: '^#?hot_standby = \w+(\s+#.*)'
     line: 'hot_standby = yes\1'
     backrefs: yes
