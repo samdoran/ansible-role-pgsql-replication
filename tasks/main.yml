@@ -1,4 +1,21 @@
-- import_tasks: pgsql_version.yml
+- name: Get PGSQL version
+  command: psql --version
+  changed_when: no
+  check_mode: no
+  register: pgsql_version_check
+  environment:
+    PATH: /opt/rh/rh-postgresql10/root/usr/bin:{{ ansible_env.PATH }}
+    LIBRARY_PATH: /opt/rh/rh-postgresql10/root/usr/lib64
+    JAVACONFDIRS: '/etc/opt/rh/rh-postgresql10/java:/etc/java'
+    LD_LIBRARY_PATH: /opt/rh/rh-postgresql10/root/usr/lib64
+    CPATH: /opt/rh/rh-postgresql10/root/usr/include
+    PKG_CONFIG_PATH: /opt/rh/rh-postgresql10/root/usr/lib64/pkgconfig
+  tags:
+    - always
+
+- name: Set PGSQL version
+  set_fact:
+    pgsql_version: "{{ pgsql_version_check['stdout'] | pgsql_version_string }}"
   tags:
     - always
 
