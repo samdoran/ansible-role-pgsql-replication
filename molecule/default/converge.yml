@@ -12,19 +12,10 @@
 
     - import_role:
         name: packages_el
-      vars:
-        packages_el_install_tower: no
-        packages_el_install_postgres: yes
-        existing_pg_dir: '/var/lib/pgsql/9.6/data'
-        config_dynamic_database: internal
 
     - import_role:
         name: postgres
-      vars:
-        max_postgres_connections: 1024
-        postgres_shared_memory_size: "{{ (ansible_memtotal_mb*0.3)|int }}"
-        postgres_work_mem: "{{ (ansible_memtotal_mb*0.03)|int }}"
-        postgres_maintenance_work_mem: "{{ (ansible_memtotal_mb*0.04)|int }}"
+
 
 - name: Configure PSQL master server
   hosts: database[0]
@@ -38,7 +29,9 @@
   tasks:
     - name: Find recovery.conf
       find:
-        paths: /var/lib/pgsql
+        paths:
+          - /var/lib/pgsql
+          - /opt/rh/rh-postgresql10
         recurse: yes
         patterns: recovery.conf
       register: recovery_conf_path
@@ -47,7 +40,7 @@
       file:
         path: "{{ item.path }}"
         state: absent
-      with_items: "{{ recovery_conf_path.files }}"
+      loop: "{{ recovery_conf_path.files }}"
 
     - import_role:
         name: pgsql_replication

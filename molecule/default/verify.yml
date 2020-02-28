@@ -1,0 +1,25 @@
+- name: Ensure streaming replication is working on master
+  hosts: database[0]
+  tasks:
+    - name: List PostgreSQL connections
+      command: ss --no-header --tcp --ipv4 state established sport = :5432
+      changed_when: no
+      register: psql_master_connections
+
+    - name: Ensure we have the correct number of connections
+      assert:
+        that:
+          - psql_master_connections.stdout_lines | length == 2
+
+- name: Ensure streaming replication is working on replica nodes
+  hosts: database_replica
+  tasks:
+    - name: List PostgreSQL connections
+      command: ss --no-header --tcp --ipv4 state established dport = :5432
+      changed_when: no
+      register: psql_replica_connections
+
+    - name: Ensure we have the correct number of connections
+      assert:
+        that:
+          - psql_replica_connections.stdout_lines | length == 1
