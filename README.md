@@ -2,7 +2,7 @@
 PostgreSQL Streaming Replication
 =========
 [![Galaxy](https://img.shields.io/badge/galaxy-samdoran.pgsql_replication-blue.svg?style=flat)](https://galaxy.ansible.com/samdoran/pgsql_replication)
-[![Build Status](https://travis-ci.org/samdoran/ansible-role-pgsql-replication.svg?branch=master)](https://travis-ci.org/samdoran/ansible-role-pgsql-replication)
+[![Build Status](https://travis-ci.com/samdoran/ansible-role-pgsql-replication.svg?branch=master)](https://travis-ci.com/samdoran/ansible-role-pgsql-replication)
 
 Configure PostgreSQL streaming replication between two or more nodes. This role was developed and tested for use on PostgreSQL for setting up a redundant database backend for [Ansible Tower](https://www.ansible.com/tower). This will not configure advanced clustering but will configure two PostgreSQL nodes in a master/replica configuration.
 
@@ -72,10 +72,8 @@ Install this role alongside the roles used by the Ansible Tower installer (bundl
 
 **Note:** If you want to allow _all_ IP addresses to connect to the master node, use `pgsqlrep_replica_address: "{{ groups[pgsqlrep_group_name] | map('extract', hostvars, 'ansible_all_ipv4_addresses') | flatten }}"`.
 
-```
-ansible-galaxy install samdoran.pgsql_replication -p roles
-ansible-playbook -b -i inventory pgsql_replication.yml
-```
+**Note:** This playbook is not regularly tested and is meant as a guideline only. Use at your own risk.
+
 
 ```yaml
 - name: Configure PostgreSQL streaming replication
@@ -84,7 +82,9 @@ ansible-playbook -b -i inventory pgsql_replication.yml
   tasks:
     - name: Find recovery.conf
       find:
-        paths: /var/lib/pgsql
+        paths:
+          - /var/lib/pgsql
+          - /opt/rh/rh-postgresql10
         recurse: yes
         patterns: recovery.conf
       register: recovery_conf_path
@@ -104,14 +104,12 @@ ansible-playbook -b -i inventory pgsql_replication.yml
 
     - import_role:
         name: repos_el
-      when: ansible_os_family == "RedHat"
 
     - import_role:
         name: packages_el
       vars:
         packages_el_install_tower: no
         packages_el_install_postgres: yes
-      when: ansible_os_family == "RedHat"
 
     - import_role:
         name: postgres
@@ -128,32 +126,25 @@ ansible-playbook -b -i inventory pgsql_replication.yml
       tags:
         - postgresql_database
 
-    - import_role:
-        name: firewall
-      vars:
-        firewalld_http_port: "{{ nginx_http_port }}"
-        firewalld_https_port: "{{ nginx_https_port }}"
-      tags:
-        - firewall
-      when: ansible_os_family == 'RedHat'
 
 - name: Configure PSQL master server
   hosts: database[0]
 
   vars:
-    pgsqlrep_master_address: "{{ hostvars[groups[pgsqlrep_group_name_master][0]].ansible_all_ipv4_addresses[-1] }}"
-    pgsqlrep_replica_address: "{{ hostvars[groups[pgsqlrep_group_name][0]].ansible_all_ipv4_addresses[-1] }}"
+    pgsqlrep_master_address: "{{ hostvars[groups[pgsqlrep_group_name_master][0]]['ansible_facts]['all_ipv4_addresses'][-1] }}"
+    pgsqlrep_replica_address: "{{ hostvars[groups[pgsqlrep_group_name][0]]['ansible_facts]['all_ipv4_addresses'][-1] }}"
 
   tasks:
     - import_role:
         name: samdoran.pgsql_replication
 
-- name: Configure PSQL replica
+
+- name: Configure PSQL replica(s)
   hosts: database_replica
 
   vars:
-    pgsqlrep_master_address: "{{ hostvars[groups[pgsqlrep_group_name_master][0]].ansible_all_ipv4_addresses[-1] }}"
-    pgsqlrep_replica_address: "{{ hostvars[groups[pgsqlrep_group_name][0]].ansible_all_ipv4_addresses[-1] }}"
+    pgsqlrep_master_address: "{{ hostvars[groups[pgsqlrep_group_name_master][0]]['ansible_facts']['all_ipv4_addresses'][-1] }}"
+    pgsqlrep_replica_address: "{{ hostvars[groups[pgsqlrep_group_name][0]]['ansible_facts']['all_ipv4_addresses'][-1] }}"
 
   tasks:
     - import_role:
@@ -170,9 +161,25 @@ If the primary database node goes down, here is a playbook that can be used to f
   hosts: all
   become: yes
 
+
 - name: Failover PostgreSQL
   hosts: database_replica
   become: yes
+
+  vars:
+    '9':
+      env:
+        PATH: /usr/pgsql-{{ pgsql_version }}/bin:{{ ansible_env.PATH }}
+        PGDATA: /var/lib/pgsql/{{ pgsql_version }}/data
+    '10':
+      env:
+        PATH: /opt/rh/rh-postgresql10/root/usr/bin:{{ ansible_env.PATH }}
+        PGDATA: /var/opt/rh/rh-postgresql10/lib/pgsql/data
+        LIBRARY_PATH: /opt/rh/rh-postgresql10/root/usr/lib64
+        JAVACONFDIRS: '/etc/opt/rh/rh-postgresql10/java:/etc/java'
+        LD_LIBRARY_PATH: /opt/rh/rh-postgresql10/root/usr/lib64
+        CPATH: /opt/rh/rh-postgresql10/root/usr/include
+        PKG_CONFIG_PATH: /opt/rh/rh-postgresql10/root/usr/lib64/pkgconfig
 
   tasks:
     - name: Get the current PostgreSQL Version
@@ -181,11 +188,11 @@ If the primary database node goes down, here is a playbook that can be used to f
         tasks_from: pgsql_version.yml
 
     - name: Promote secondary PostgreSQL server to primary
-      command: /usr/pgsql-{{ pgsql_version }}/bin/pg_ctl promote
+      command: pg_ctl promote
       become_user: postgres
-      environment:
-        PGDATA: /var/lib/pgsql/{{ pgsql_version }}/data
+      environment: "{{ pgsql_version.split('.')[0]['env']] }}"
       ignore_errors: yes
+
 
 - name: Update Ansible Tower database configuration
   hosts: tower
@@ -196,7 +203,7 @@ If the primary database node goes down, here is a playbook that can be used to f
       lineinfile:
         dest: /etc/tower/conf.d/postgres.py
         regexp: "^(.*'HOST':)"
-        line: "\\1 '{{ hostvars[groups['database_replica'][0]].ansible_default_ipv4.address }}',"
+        line: "\\1 '{{ hostvars[groups['database_replica'][0]]['ansible_facts']['default_ipv4']['address'] }}',"
         backrefs: yes
       notify: restart tower
 
