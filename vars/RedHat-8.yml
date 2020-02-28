@@ -1,0 +1,7 @@
+pgsqlrep_data_path:
+  '9': /var/lib/pgsql/{{ pgsql_version }}/data
+  '10': /var/lib/pgsql/data
+
+pgsql_service_name:
+  '9': postgresql-{{ pgsql_version }}
+  '10': postgresql

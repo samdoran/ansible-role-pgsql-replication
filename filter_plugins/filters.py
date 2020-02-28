@@ -6,8 +6,6 @@ __metaclass__ = type
 
 from ansible.module_utils._text import to_native
 
-from distutils.version import LooseVersion
-
 
 def parse_psql_version(version_string):
     """Take the raw output of psql --version and return major.minor version string
@@ -21,19 +19,8 @@ def parse_psql_version(version_string):
     return '.'.join(version.split('.')[:2])
 
 
-def get_psql_service_name(version):
-    version = to_native(version)
-    if LooseVersion(version) < LooseVersion('10'):
-        version = '.'.join(version.split('.')[:2])
-        return 'postgresql-{0}'.format(version)
-    elif LooseVersion(version) >= LooseVersion('10'):
-        version = version.split('.')[0]
-        return 'rh-postgresql{0}-postgresql'.format(version)
-
-
 class FilterModule:
     def filters(self):
         return {
             'pgsql_version_string': parse_psql_version,
-            'pgsql_service_string': get_psql_service_name,
         }

@@ -12,3 +12,9 @@
     PKG_CONFIG_PATH: /opt/rh/rh-postgresql10/root/usr/lib64/pkgconfig
   tags:
     - always
+
+- name: Set PGSQL version
+  set_fact:
+    pgsql_version: "{{ pgsql_version_check['stdout'] | pgsql_version_string }}"
+  tags:
+    - always

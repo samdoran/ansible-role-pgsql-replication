@@ -1,10 +1,6 @@
 pg_port: 5432
 
 pgsqlrep_role: skip
-pgsql_major_version: "{{ pgsql_version.split('.')[0] }}"
-pgsqlrep_data_path:
-  '9': /var/lib/pgsql/{{ pgsql_version }}/data
-  '10': /var/opt/rh/rh-postgresql10/lib/pgsql/data
 pgsqlrep_user: replicator
 # pgsqlrep_password: '' # Store this in an Ansible vault
 pgsqlrep_wal_level: hot_standby
