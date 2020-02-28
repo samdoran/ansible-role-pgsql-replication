@@ -8,12 +8,12 @@ Configure PostgreSQL streaming replication between two or more nodes. This role 
 
 Each host defined in `pgsqlrep_group_name` will be added to the `pg_hba.conf` on the master node.
 
-This role leverages included with the [Ansible Tower installer](https://releases.ansible.com/ansible-tower/setup/).
+This role is meant to be installed alongside the roles included with the [Ansible Tower installer](https://releases.ansible.com/ansible-tower/setup/).
 
 Requirements
 ------------
 
-Ansible Tower installer roles in your `roles_path` as well as a properly configured Ansible Tower inventory file.
+Ansible Tower installer roles in your `roles_path` as well as a properly configured Ansible Tower inventory file. You can install this role in the `roles/` directory included with the Ansible Tower installer.
 
 Add the replica database node to the Ansible Tower inventory file and define `pgsqlrep_role` for each database host.
 
@@ -65,12 +65,13 @@ The following roles from the [Ansible Tower installer](https://releases.ansible.
 
 Example Playbook
 ----------------
-
-Install this role alongside the roles used by the Ansible Tower installer (bundled or standalone). Then run the example playbook.
+The following playbooks were tested on CentOS 7 and may need adjustment to work with CentOS 8.
 
 **Note:** This example playbook overrides the IP address for the master and replica nodes by getting the last IP from the list of all IPs on the system. This is just an example of how to override this value if the default IP address does not provide the desired IP.
 
-**Note:** If you want to allow _all_ IP addresses to connect to the master node, use `pgsqlrep_replica_address: "{{ groups[pgsqlrep_group_name] | map('extract', hostvars, 'ansible_all_ipv4_addresses') | flatten }}"`.
+**Note:** If you want to allow _all_ IP addresses to connect to the master node, use:
+
+    pgsqlrep_replica_address: "{{ groups[pgsqlrep_group_name] | map('extract', hostvars, 'ansible_all_ipv4_addresses') | flatten }}"
 
 **Note:** This playbook is not regularly tested and is meant as a guideline only. Use at your own risk.
 
