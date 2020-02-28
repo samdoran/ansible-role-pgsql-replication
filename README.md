@@ -54,14 +54,14 @@ Role Variables
 | `pgsqlrep_master_address` | `[default IPv4 of the master]` | If you need something other than the default IPv4 address, for exaample, FQDN, define it here. |
 | `pgsqlrep_replica_address` | `[default IPv4 of the replica(s)]` | If you need something other than the default IPv4 address, for exaample, FQDN, define it here. |
 | `pgsqlrep_postgres_conf_lines` | `[see defaults/main.yml]` | Lines in `postgres.conf` that are set in order to enable streaming replication. |
-| `pgsqlrep_data_path` | `[see defaults/main.yml]` | Path to PostgreSQL data which is selected based on the installed PostgreSQL version. |
 
 
 Dependencies
 ------------
+The following roles from the [Ansible Tower installer](https://releases.ansible.com/ansible-tower/setup/) are required:
 
-- repos_el
-- postgresql
+  - repos_el
+  - postgresql
 
 Example Playbook
 ----------------
