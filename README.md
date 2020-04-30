@@ -80,6 +80,10 @@ The following playbooks were tested on CentOS 7 and may need adjustment to work 
 - name: Configure PostgreSQL streaming replication
   hosts: database_replica
 
+  roles:
+    - role: postgres
+      postgres_exec_vars_only: true
+
   tasks:
     - name: Find recovery.conf
       find:
@@ -132,8 +136,8 @@ The following playbooks were tested on CentOS 7 and may need adjustment to work 
   hosts: database[0]
 
   vars:
-    pgsqlrep_master_address: "{{ hostvars[groups[pgsqlrep_group_name_master][0]]['ansible_facts]['all_ipv4_addresses'][-1] }}"
-    pgsqlrep_replica_address: "{{ hostvars[groups[pgsqlrep_group_name][0]]['ansible_facts]['all_ipv4_addresses'][-1] }}"
+    pgsqlrep_master_address: "{{ hostvars[groups[pgsqlrep_group_name_master][0]]['ansible_facts']['all_ipv4_addresses'][-1] }}"
+    pgsqlrep_replica_address: "[ '{{ hostvars[groups[pgsqlrep_group_name][0]]['ansible_facts']['all_ipv4_addresses'][-1] }}' ]"
 
   tasks:
     - import_role:
