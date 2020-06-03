@@ -1,3 +1,6 @@
 standby_mode=on
 trigger_file='/tmp/promotedb'
 primary_conninfo='host={{ pgsqlrep_master_address }} port={{ pg_port }} user={{ pgsqlrep_user }} application_name={{ pgsqlrep_application_name }}'
+{% if pgsqlrep_use_slots %}
+primary_slot_name='{{ pgsqlrep_primary_slot_name }}'
+{% endif %}

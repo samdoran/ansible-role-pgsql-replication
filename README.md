@@ -54,6 +54,9 @@ Role Variables
 | `pgsqlrep_master_address` | `[default IPv4 of the master]` | If you need something other than the default IPv4 address, for exaample, FQDN, define it here. |
 | `pgsqlrep_replica_address` | `[default IPv4 of the replica(s)]` | If you need something other than the default IPv4 address, for exaample, FQDN, define it here. |
 | `pgsqlrep_postgres_conf_lines` | `[see defaults/main.yml]` | Lines in `postgres.conf` that are set in order to enable streaming replication. |
+| `pgsqlrep_max_replication_slots` | `10` | Max number of replication slots allowd on the master database |
+| `pgsqlrep_use_slots` | `no` | Use replication slots when setting up replication. See [documentation](https://www.postgresql.org/docs/9.6/warm-standby.html#STREAMING-REPLICATION-SLOTS) |
+| `pgsqlrep_primary_slot_name` | `[undefined]` | Set on a host to change the name of the replication slot used by a replica otherwise a system generated name is used. |
 
 
 Dependencies

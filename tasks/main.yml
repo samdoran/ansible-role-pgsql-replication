@@ -14,5 +14,16 @@
   tags:
     - always
 
+- name: Generate replication slot names
+  set_fact:
+    pgsqlrep_primary_slot_name: "slot{{ ansible_loop.index }}"
+  loop: "{{ groups[pgsqlrep_group_name] }}"
+  loop_control:
+    extended: yes
+  delegate_to: "{{ item }}"
+  delegate_facts: yes
+  run_once: yes
+  when: hostvars[item]['pgsqlrep_primary_slot_name'] is undefined
+
 - include_tasks: "{{ pgsqlrep_role }}.yml"
   when: pgsqlrep_role != 'skip'

@@ -1,0 +1,40 @@
+- name: Ensure streaming replication is working on master
+  hosts: database[0]
+  tasks:
+    - name: List PostgreSQL connections
+      command: ss --no-header --tcp --ipv4 state established sport = :5432
+      changed_when: no
+      register: psql_master_connections
+
+    - name: Ensure we have the correct number of connections
+      assert:
+        that:
+          - psql_master_connections.stdout_lines | length == 2
+
+    - name: Query replication slots
+      postgresql_query:
+        query: SELECT * FROM pg_replication_slots
+      register: pg_replication_slots
+      become: yes
+      become_user: postgres
+
+    - name: Ensure the replication slots are created and being used
+      assert:
+        that:
+          - item.slot_name in ['test1', 'slot2']
+          - item.active
+      loop: "{{ pg_replication_slots.query_result }}"
+
+
+- name: Ensure streaming replication is working on replica nodes
+  hosts: database_replica
+  tasks:
+    - name: List PostgreSQL connections
+      command: ss --no-header --tcp --ipv4 state established dport = :5432
+      changed_when: no
+      register: psql_replica_connections
+
+    - name: Ensure we have the correct number of connections
+      assert:
+        that:
+          - psql_replica_connections.stdout_lines | length == 1

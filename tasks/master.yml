@@ -12,9 +12,20 @@
   postgresql_user:
     name: "{{ pgsqlrep_user }}"
     password: "{{ pgsqlrep_password }}"
-    role_attr_flags: replication
+    role_attr_flags: REPLICATION
   become: yes
   become_user: postgres
+
+- name: Create replication slots
+  postgresql_slot:
+    slot_name: "{{ item }}"
+    slot_type: physical
+    state: present
+  loop: "{{ groups[pgsqlrep_group_name] | map('extract', hostvars, 'pgsqlrep_primary_slot_name') | list }}"
+  become: yes
+  become_user: postgres
+  when:
+    - pgsqlrep_use_slots
 
 - name: Add trust in pg_hba.conf
   lineinfile:

@@ -1,0 +1,86 @@
+dependency:
+  name: galaxy
+driver:
+  name: docker
+lint: |
+  ansible-lint -x 204,403,502,301,302 --exclude molecule/default/roles
+  yamllint -c molecule/default/yamllint.yml .
+platforms:
+  - name: pgsql-replication-test-master
+    groups:
+      - tower
+      - database
+    image: "quay.io/samdoran/${MOLECULE_DISTRIBUTION:-centos7}-ansible:latest"
+    command: ${MOLECULE_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    privileged: yes
+    pre_build_image: yes
+
+  - name: pgsql-replication-test-replica1
+    groups:
+      - database
+      - database_replica
+    image: "quay.io/samdoran/${MOLECULE_DISTRIBUTION:-centos7}-ansible:latest"
+    command: ${MOLECULE_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    privileged: yes
+    pre_build_image: yes
+
+  - name: pgsql-replication-test-replica2
+    groups:
+      - database
+      - database_replica
+    image: "quay.io/samdoran/${MOLECULE_DISTRIBUTION:-centos7}-ansible:latest"
+    command: ${MOLECULE_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    privileged: yes
+    pre_build_image: yes
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      stdout_callback: debug
+  playbooks:
+    converge: ${MOLECULE_PLAYBOOK:-converge.yml}
+  inventory:
+    group_vars:
+      all:
+        tower_package_name: 'ansible-tower'
+        tower_package_version: '3.6.3'
+        pgsqlrep_password: 'SammyDrakeSaturn'
+        postgres_password: 'GnomeTutuPig'
+        packages_el_install_tower: no
+        packages_el_install_postgres: yes
+        existing_pg_dir: '/var/lib/pgsql/9.6/data'
+        config_dynamic_database: internal
+        max_postgres_connections: 1024
+        postgres_shared_memory_size: "{{ (ansible_memtotal_mb*0.3)|int }}"
+        postgres_work_mem: "{{ (ansible_memtotal_mb*0.03)|int }}"
+        postgres_maintenance_work_mem: "{{ (ansible_memtotal_mb*0.04)|int }}"
+        pgsqlrep_use_slots: yes
+      database:
+        pgsqlrep_role: master
+      database_replica:
+        pgsqlrep_role: replica
+    host_vars:
+      pgsql-replication-test-replica1:
+        pgsqlrep_primary_slot_name: test1
+scenario:
+  name: with_slots
+  test_sequence:
+    - dependency
+    - lint
+    - cleanup
+    - destroy
+    - prepare
+    - syntax
+    - create
+    - converge
+    - verify
+    - cleanup
+    - destroy
+verifier:
+  name: ansible

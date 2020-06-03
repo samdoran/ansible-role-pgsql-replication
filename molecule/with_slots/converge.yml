@@ -1,0 +1,46 @@
+- name: Install PostgreSQL on all nodes
+  hosts: database:database_replica
+  become: yes
+  tasks:
+    - debug:
+        msg: >-
+          Testing with Ansible {{ ansible_version.full }} using Python {{ ansible_facts.python_version }}
+          on {{ ansible_facts.distribution }} {{ ansible_facts.distribution_version }}
+
+    - import_role:
+        name: repos_el
+
+    - import_role:
+        name: packages_el
+
+    - import_role:
+        name: postgres
+
+
+- name: Configure PSQL master server
+  hosts: database[0]
+  tasks:
+    - import_role:
+        name: pgsql_replication
+
+
+- name: Configure PSQL replica
+  hosts: database_replica
+  tasks:
+    - name: Find recovery.conf
+      find:
+        paths:
+          - /var/lib/pgsql
+          - /opt/rh/rh-postgresql10
+        recurse: yes
+        patterns: recovery.conf
+      register: recovery_conf_path
+
+    - name: Remove recovery.conf
+      file:
+        path: "{{ item.path }}"
+        state: absent
+      loop: "{{ recovery_conf_path.files }}"
+
+    - import_role:
+        name: pgsql_replication
