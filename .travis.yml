@@ -1,3 +1,4 @@
+dist: focal
 language: python
 services: docker
 
@@ -9,7 +10,7 @@ env:
     - MOLECULE_DISTRIBUTION: centos8
 
 install:
-  - pip install molecule[lint] docker
+  - pip install molecule[lint]==3.0.6 docker
 
 before_script:
   # Remove "ansible-role-" prefix from role name
